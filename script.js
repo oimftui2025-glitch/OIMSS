@@ -1,18 +1,19 @@
-// ================= DATABASE SURVEY (10 JAWABAN) =================
+// ================= DATABASE SURVEY (1 SOAL, 10 JAWABAN) =================
+// Poin sengaja gue acak nulisnya buat ngebuktiin kodenya bisa ngurutin otomatis!
 const surveyDatabase = [
     {
         question: "Alasan paling klasik pas telat masuk kelas pagi?",
         answers: [
-            { text: "Kesiangan / Bangun Kebo", points: 25, keywords: ["siang", "bangun", "tidur", "kebo", "alarm", "pulas"], revealed: false },
-            { text: "Macet Parah", points: 20, keywords: ["macet", "jalan", "margo", "lantas", "lalin", "stuck"], revealed: false },
-            { text: "Susah Dapet Parkir", points: 15, keywords: ["parkir", "sempit", "antri", "penuh", "motor", "slot"], revealed: false },
-            { text: "Mules Dadakan / Ke WC", points: 10, keywords: ["mules", "boker", "berak", "wc", "toilet", "perut", "bab"], revealed: false },
-            { text: "Hujan Badai", points: 8, keywords: ["hujan", "air", "badai", "basah", "jas", "neduh", "deras"], revealed: false },
-            { text: "Jemputan / Ojol Lama", points: 7, keywords: ["jemput", "grab", "gojek", "ojol", "lama", "driver", "indriver"], revealed: false },
-            { text: "Nunggu Temen Tebengan", points: 5, keywords: ["temen", "tebeng", "nebeng", "bareng", "nunggu", "bonceng"], revealed: false },
-            { text: "Ban Bocor", points: 4, keywords: ["ban", "bocor", "tambal", "paku", "kempes", "roda"], revealed: false },
-            { text: "Kunci Motor Nyelip", keywords: ["kunci", "nyelip", "ilang", "lupa", "cari", "motor"], points: 3, revealed: false },
-            { text: "Kelamaan Nugas di Rumah", points: 3, keywords: ["nugas", "tugas", "pr", "laporan", "begadang", "ngerjain", "proyek"], revealed: false }
+            { text: "Nunggu Temen Tebengan", points: 10, keywords: ["temen", "tebeng", "nebeng", "bareng", "nunggu", "bonceng"], revealed: false },
+            { text: "Kesiangan / Bangun Kebo", points: 50, keywords: ["siang", "bangun", "tidur", "kebo", "alarm", "pulas"], revealed: false },
+            { text: "Kelamaan Nugas di Rumah", points: 2, keywords: ["nugas", "tugas", "pr", "laporan", "begadang", "ngerjain", "proyek"], revealed: false },
+            { text: "Macet Parah", points: 40, keywords: ["macet", "jalan", "margo", "lantas", "lalin", "stuck"], revealed: false },
+            { text: "Susah Dapet Parkir", points: 30, keywords: ["parkir", "sempit", "antri", "penuh", "motor", "slot"], revealed: false },
+            { text: "Jemputan / Ojol Lama", points: 15, keywords: ["jemput", "grab", "gojek", "ojol", "lama", "driver", "indriver"], revealed: false },
+            { text: "Mules Dadakan / Ke WC", points: 25, keywords: ["mules", "boker", "berak", "wc", "toilet", "perut", "bab"], revealed: false },
+            { text: "Hujan Badai", points: 20, keywords: ["hujan", "air", "badai", "basah", "jas", "neduh", "deras"], revealed: false },
+            { text: "Kunci Motor Nyelip", points: 5, keywords: ["kunci", "nyelip", "ilang", "lupa", "cari", "motor"], revealed: false },
+            { text: "Ban Bocor", points: 8, keywords: ["ban", "bocor", "tambal", "paku", "kempes", "roda"], revealed: false }
         ]
     }
 ];
@@ -44,7 +45,7 @@ function triggerBuzzFromPhone(team) {
     }
 }
 
-// ================= CORE GAME =================
+// ================= CORE GAME & SORTING OTOMATIS =================
 window.onload = () => { loadQuestion(); };
 
 function loadQuestion() {
@@ -53,13 +54,19 @@ function loadQuestion() {
     const board = document.getElementById('board-container');
     board.innerHTML = ''; 
 
+    // 👉 ALGORITMA SORTING: Ngurutin otomatis berdasar poin terbesar
+    data.answers.sort((a, b) => b.points - a.points);
+
     data.answers.forEach((ans, i) => {
         ans.revealed = false; 
         const slot = document.createElement('div');
         slot.className = 'answer-slot hidden-ans';
         slot.id = `ans-slot-${i}`;
+        
+        // Klik kotak manual buat jaga-jaga kalau operator typo
         slot.onclick = () => revealAnswer(i);
-        slot.innerHTML = `<span class="ans-text">${ans.text}</span><span class="ans-points">${ans.points}</span>`;
+        
+        slot.innerHTML = `<span class="ans-text">${i+1}. ${ans.text}</span><span class="ans-points">${ans.points}</span>`;
         board.appendChild(slot);
     });
 
@@ -72,6 +79,7 @@ function updateTeamUI() {
     const boxA = document.getElementById('teamA');
     const boxB = document.getElementById('teamB');
     const activeText = document.getElementById('active-team-text');
+    
     boxA.classList.remove('active-buzzer');
     boxB.classList.remove('active-buzzer');
 
@@ -95,7 +103,7 @@ function playBuzzerSound() {
     osc.start(); osc.stop(ctx.currentTime + 0.3); 
 }
 
-// ================= INPUT OPERATOR =================
+// ================= INPUT OPERATOR (KEYWORD CHECKER) =================
 document.getElementById('operator-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') submitAnswer();
 });
@@ -111,6 +119,7 @@ function submitAnswer() {
     for(let i = 0; i < currentAnswers.length; i++) {
         const ansData = currentAnswers[i];
         if(ansData.revealed) continue; 
+        
         if(ansData.keywords.some(k => rawInput.includes(k))) {
             foundIndex = i; break; 
         }
@@ -120,7 +129,7 @@ function submitAnswer() {
         feedback.innerText = "JAWABAN ADA!"; feedback.style.color = "#2ecc71";
         revealAnswer(foundIndex);
     } else {
-        feedback.innerText = "TETOOOT! SALAH!"; feedback.style.color = "#e74c3c";
+        feedback.innerText = "TETOOOT! SALAH ATAU KEYWORD GAK KETEMU!"; feedback.style.color = "#e74c3c";
         triggerStrike();
     }
     document.getElementById('operator-input').value = '';
@@ -135,6 +144,7 @@ function revealAnswer(index) {
     slot.classList.remove('hidden-ans');
     slot.classList.add('revealed');
 
+    // Nambah skor
     if(activeTeam === 'A') scoreA += ansData.points;
     else if (activeTeam === 'B') scoreB += ansData.points;
     
@@ -153,9 +163,15 @@ function triggerStrike() {
     osc.frequency.setValueAtTime(150, ctx.currentTime); 
     osc.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime + 0.6);
-    setTimeout(() => { strike.classList.add('hidden'); activeTeam = null; updateTeamUI(); }, 1500);
+    
+    setTimeout(() => { 
+        strike.classList.add('hidden'); 
+        activeTeam = null; 
+        updateTeamUI(); 
+    }, 1500);
 }
 
+// Backup Keyboard di Laptop (Pencet Q atau P)
 window.addEventListener('keydown', (e) => {
     if(e.target.tagName === 'INPUT') return; 
     if(e.key.toLowerCase() === 'q') triggerBuzzFromPhone('A');
