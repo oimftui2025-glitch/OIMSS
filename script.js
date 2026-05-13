@@ -1,5 +1,4 @@
-// ================= DATABASE SURVEY =================
-// Lo bisa tambah soal sebanyak-banyaknya di sini
+// ================= DATABASE SURVEY (CUMA 1 SOAL) =================
 const surveyDatabase = [
     {
         question: "Alasan paling klasik pas telat masuk kelas pagi?",
@@ -9,25 +8,14 @@ const surveyDatabase = [
             { text: "Macet di Jalan", points: 15, keywords: ["macet", "margo", "jalan", "lampu merah"], revealed: false },
             { text: "Nungguin Temen Bareng", points: 10, keywords: ["temen", "bareng", "nunggu", "nebeng"], revealed: false }
         ]
-    },
-    {
-        question: "Barang yang sering banget hilang di kampus?",
-        answers: [
-            { text: "Pulpen / Alat Tulis", points: 50, keywords: ["pulpen", "pensil", "pen", "alat tulis", "tipe x"], revealed: false },
-            { text: "Botol Minum / Tumbler", points: 25, keywords: ["botol", "minum", "tumbler", "tupperware"], revealed: false },
-            { text: "Flashdisk", points: 15, keywords: ["flashdisk", "fd", "usb"], revealed: false },
-            { text: "Jaket / Hoodie", points: 10, keywords: ["jaket", "hoodie", "sweater"], revealed: false }
-        ]
     }
 ];
 
-let currentQuestionIndex = 0;
 let scoreA = 0;
 let scoreB = 0;
 let activeTeam = null; 
 
 // ================= PEER JS (JARINGAN HOST) =================
-// Bikin ID Acak (Misal: OIM-A1B2)
 const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
 const myRoomId = "OIM-" + randomStr;
 
@@ -38,7 +26,6 @@ peer.on('open', (id) => {
     console.log("Menunggu HP konek ke:", id);
 });
 
-// Listener kalau ada HP (Buzzer) yang nyambung
 peer.on('connection', (conn) => {
     conn.on('data', (data) => {
         if(data.action === 'buzz') {
@@ -48,7 +35,6 @@ peer.on('connection', (conn) => {
 });
 
 function triggerBuzzFromPhone(team) {
-    // Kalo belum ada yang neken buzzer, kunci buat tim itu
     if(activeTeam === null) {
         activeTeam = team;
         updateTeamUI();
@@ -57,12 +43,10 @@ function triggerBuzzFromPhone(team) {
 }
 
 // ================= CORE GAME =================
-window.onload = () => { loadQuestion(currentQuestionIndex); };
+window.onload = () => { loadQuestion(); };
 
-function loadQuestion(index) {
-    if(index >= surveyDatabase.length) return alert("Semua soal udah habis bos!");
-    
-    const data = surveyDatabase[index];
+function loadQuestion() {
+    const data = surveyDatabase[0]; // Langsung ambil soal index 0
     document.getElementById('question-text').innerText = data.question;
     
     const board = document.getElementById('board-container');
@@ -74,7 +58,6 @@ function loadQuestion(index) {
         slot.className = 'answer-slot hidden-ans';
         slot.id = `ans-slot-${i}`;
         
-        // Kalo input error, lo bisa klik kotaknya langsung pake mouse
         slot.onclick = () => revealAnswer(i);
         
         slot.innerHTML = `<span class="ans-text">${ans.text}</span><span class="ans-points">${ans.points}</span>`;
@@ -115,7 +98,7 @@ function playBuzzerSound() {
     osc.start(); osc.stop(ctx.currentTime + 0.3); 
 }
 
-// ================= INPUT OPERATOR (KEYWORD CHECKER) =================
+// ================= INPUT OPERATOR =================
 document.getElementById('operator-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') submitAnswer();
 });
@@ -125,14 +108,13 @@ function submitAnswer() {
     const feedback = document.getElementById('operator-feedback');
     if(rawInput === "") return feedback.innerText = "Ketik dulu bos!";
 
-    const currentAnswers = surveyDatabase[currentQuestionIndex].answers;
+    const currentAnswers = surveyDatabase[0].answers;
     let foundIndex = -1;
 
     for(let i = 0; i < currentAnswers.length; i++) {
         const ansData = currentAnswers[i];
-        if(ansData.revealed) continue; // Kalo udah kebuka, skip
+        if(ansData.revealed) continue; 
         
-        // Cek kecocokan keyword
         if(ansData.keywords.some(k => rawInput.includes(k))) {
             foundIndex = i; break; 
         }
@@ -149,7 +131,7 @@ function submitAnswer() {
 }
 
 function revealAnswer(index) {
-    const ansData = surveyDatabase[currentQuestionIndex].answers[index];
+    const ansData = surveyDatabase[0].answers[index];
     if(ansData.revealed) return; 
 
     ansData.revealed = true;
@@ -157,14 +139,12 @@ function revealAnswer(index) {
     slot.classList.remove('hidden-ans');
     slot.classList.add('revealed');
 
-    // Tambah Poin
     if(activeTeam === 'A') scoreA += ansData.points;
     else if (activeTeam === 'B') scoreB += ansData.points;
     
     document.getElementById('scoreA').innerText = scoreA;
     document.getElementById('scoreB').innerText = scoreB;
 
-    // Buka sesi rebutan lagi
     activeTeam = null; 
     updateTeamUI(); 
 }
@@ -185,12 +165,7 @@ function triggerStrike() {
     }, 1500);
 }
 
-function nextQuestion() {
-    currentQuestionIndex++;
-    loadQuestion(currentQuestionIndex);
-}
-
-// Backup Keyboard: Tekan Q (Tim A) atau P (Tim B) di laptop kalau HP error
+// Backup Keyboard
 window.addEventListener('keydown', (e) => {
     if(e.target.tagName === 'INPUT') return; 
     if(e.key.toLowerCase() === 'q') triggerBuzzFromPhone('A');
