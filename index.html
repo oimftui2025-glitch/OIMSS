@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OIM Survey Showdown - HOST</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+    <div class="main-display">
+        <div id="oim-logo"></div>
+        <h1 class="game-title">OIM SURVEY SHOWDOWN</h1>
+
+        <div class="buzzer-container">
+            <div id="teamA" class="team-box">
+                <h2>TIM A</h2>
+                <div class="score" id="scoreA">0</div>
+            </div>
+            <div id="teamB" class="team-box">
+                <h2>TIM B</h2>
+                <div class="score" id="scoreB">0</div>
+            </div>
+        </div>
+
+        <div class="question-board">
+            <h2 id="question-text">Loading Pertanyaan...</h2>
+        </div>
+
+        <div class="board-container" id="board-container">
+            </div>
+        
+        <div id="strike-container" class="strike-container hidden">
+            <span class="strike-x">❌</span>
+        </div>
+    </div>
+
+    <div class="operator-panel">
+        <div class="operator-header">
+            <h3 style="margin: 0; color: #f1c40f;">OPERATOR PANEL</h3>
+            <div class="room-id-box">
+                Room ID: <strong id="room-id-display" style="color: #00e5ff; letter-spacing: 2px;">MENGHUBUNGKAN...</strong>
+            </div>
+        </div>
+
+        <p style="margin: 0 0 10px 0; font-size: 0.9rem;">Tim Aktif: <strong id="active-team-text" style="color: #00e5ff;">BELUM ADA (Tunggu Buzzer HP)</strong></p>
+        
+        <div class="operator-controls">
+            <input type="text" id="operator-input" placeholder="Ketik jawaban peserta di sini (Tekan Enter)..." autocomplete="off">
+            <button class="blue-btn" onclick="submitAnswer()">Cek Jawaban</button>
+            <button class="red-btn" onclick="triggerStrike()">Salah (❌)</button>
+            <button class="grey-btn" onclick="nextQuestion()">Next Soal ⏭️</button>
+        </div>
+        <p id="operator-feedback" class="feedback-msg"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
