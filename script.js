@@ -1,12 +1,18 @@
-// ================= DATABASE SURVEY (CUMA 1 SOAL) =================
+// ================= DATABASE SURVEY (10 JAWABAN) =================
 const surveyDatabase = [
     {
         question: "Alasan paling klasik pas telat masuk kelas pagi?",
         answers: [
-            { text: "Kesiangan / Tidur Lagi", points: 45, keywords: ["siang", "tidur", "bangun", "kebo", "telat"], revealed: false },
-            { text: "Susah Dapet Parkir", points: 30, keywords: ["parkir", "sempit", "antri", "penuh", "motor"], revealed: false },
-            { text: "Macet di Jalan", points: 15, keywords: ["macet", "margo", "jalan", "lampu merah"], revealed: false },
-            { text: "Nungguin Temen Bareng", points: 10, keywords: ["temen", "bareng", "nunggu", "nebeng"], revealed: false }
+            { text: "Kesiangan / Bangun Kebo", points: 25, keywords: ["siang", "bangun", "tidur", "kebo", "alarm", "pulas"], revealed: false },
+            { text: "Macet Parah", points: 20, keywords: ["macet", "jalan", "margo", "lantas", "lalin", "stuck"], revealed: false },
+            { text: "Susah Dapet Parkir", points: 15, keywords: ["parkir", "sempit", "antri", "penuh", "motor", "slot"], revealed: false },
+            { text: "Mules Dadakan / Ke WC", points: 10, keywords: ["mules", "boker", "berak", "wc", "toilet", "perut", "bab"], revealed: false },
+            { text: "Hujan Badai", points: 8, keywords: ["hujan", "air", "badai", "basah", "jas", "neduh", "deras"], revealed: false },
+            { text: "Jemputan / Ojol Lama", points: 7, keywords: ["jemput", "grab", "gojek", "ojol", "lama", "driver", "indriver"], revealed: false },
+            { text: "Nunggu Temen Tebengan", points: 5, keywords: ["temen", "tebeng", "nebeng", "bareng", "nunggu", "bonceng"], revealed: false },
+            { text: "Ban Bocor", points: 4, keywords: ["ban", "bocor", "tambal", "paku", "kempes", "roda"], revealed: false },
+            { text: "Kunci Motor Nyelip", keywords: ["kunci", "nyelip", "ilang", "lupa", "cari", "motor"], points: 3, revealed: false },
+            { text: "Kelamaan Nugas di Rumah", points: 3, keywords: ["nugas", "tugas", "pr", "laporan", "begadang", "ngerjain", "proyek"], revealed: false }
         ]
     }
 ];
@@ -18,19 +24,15 @@ let activeTeam = null;
 // ================= PEER JS (JARINGAN HOST) =================
 const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
 const myRoomId = "OIM-" + randomStr;
-
 const peer = new Peer(myRoomId);
 
 peer.on('open', (id) => {
     document.getElementById('room-id-display').innerText = id;
-    console.log("Menunggu HP konek ke:", id);
 });
 
 peer.on('connection', (conn) => {
     conn.on('data', (data) => {
-        if(data.action === 'buzz') {
-            triggerBuzzFromPhone(data.team);
-        }
+        if(data.action === 'buzz') triggerBuzzFromPhone(data.team);
     });
 });
 
@@ -46,9 +48,8 @@ function triggerBuzzFromPhone(team) {
 window.onload = () => { loadQuestion(); };
 
 function loadQuestion() {
-    const data = surveyDatabase[0]; // Langsung ambil soal index 0
+    const data = surveyDatabase[0];
     document.getElementById('question-text').innerText = data.question;
-    
     const board = document.getElementById('board-container');
     board.innerHTML = ''; 
 
@@ -57,16 +58,13 @@ function loadQuestion() {
         const slot = document.createElement('div');
         slot.className = 'answer-slot hidden-ans';
         slot.id = `ans-slot-${i}`;
-        
         slot.onclick = () => revealAnswer(i);
-        
         slot.innerHTML = `<span class="ans-text">${ans.text}</span><span class="ans-points">${ans.points}</span>`;
         board.appendChild(slot);
     });
 
     activeTeam = null;
     updateTeamUI();
-    document.getElementById('operator-feedback').innerText = '';
     document.getElementById('operator-input').value = '';
 }
 
@@ -74,7 +72,6 @@ function updateTeamUI() {
     const boxA = document.getElementById('teamA');
     const boxB = document.getElementById('teamB');
     const activeText = document.getElementById('active-team-text');
-
     boxA.classList.remove('active-buzzer');
     boxB.classList.remove('active-buzzer');
 
@@ -106,7 +103,7 @@ document.getElementById('operator-input').addEventListener('keypress', function 
 function submitAnswer() {
     const rawInput = document.getElementById('operator-input').value.toLowerCase().trim();
     const feedback = document.getElementById('operator-feedback');
-    if(rawInput === "") return feedback.innerText = "Ketik dulu bos!";
+    if(rawInput === "") return;
 
     const currentAnswers = surveyDatabase[0].answers;
     let foundIndex = -1;
@@ -114,17 +111,16 @@ function submitAnswer() {
     for(let i = 0; i < currentAnswers.length; i++) {
         const ansData = currentAnswers[i];
         if(ansData.revealed) continue; 
-        
         if(ansData.keywords.some(k => rawInput.includes(k))) {
             foundIndex = i; break; 
         }
     }
 
     if(foundIndex !== -1) {
-        feedback.innerText = "JAWABAN ADA DI PAPAN!"; feedback.style.color = "#2ecc71";
+        feedback.innerText = "JAWABAN ADA!"; feedback.style.color = "#2ecc71";
         revealAnswer(foundIndex);
     } else {
-        feedback.innerText = "TETOOOT! SALAH ATAU GA ADA KEYWORD!"; feedback.style.color = "#e74c3c";
+        feedback.innerText = "TETOOOT! SALAH!"; feedback.style.color = "#e74c3c";
         triggerStrike();
     }
     document.getElementById('operator-input').value = '';
@@ -152,20 +148,14 @@ function revealAnswer(index) {
 function triggerStrike() {
     const strike = document.getElementById('strike-container');
     strike.classList.remove('hidden');
-    
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator(); osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(150, ctx.currentTime); 
     osc.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime + 0.6);
-
-    setTimeout(() => {
-        strike.classList.add('hidden');
-        activeTeam = null; updateTeamUI();
-    }, 1500);
+    setTimeout(() => { strike.classList.add('hidden'); activeTeam = null; updateTeamUI(); }, 1500);
 }
 
-// Backup Keyboard
 window.addEventListener('keydown', (e) => {
     if(e.target.tagName === 'INPUT') return; 
     if(e.key.toLowerCase() === 'q') triggerBuzzFromPhone('A');
