@@ -8,6 +8,9 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
+    <div id="survei-overlay" class="hidden">
+        <div class="survei-text">SURVEI MEMBUKTIKAN...</div>
+    </div>
 
     <div class="main-display">
         <div id="oim-logo"></div>
@@ -17,10 +20,20 @@
             <div id="teamA" class="team-box">
                 <h2>TIM A</h2>
                 <div class="score" id="scoreA">0</div>
+                <div class="strikes-indicator">
+                    <span id="a-strike-1" class="strike-icon">❌</span>
+                    <span id="a-strike-2" class="strike-icon">❌</span>
+                    <span id="a-strike-3" class="strike-icon">❌</span>
+                </div>
             </div>
             <div id="teamB" class="team-box">
                 <h2>TIM B</h2>
                 <div class="score" id="scoreB">0</div>
+                <div class="strikes-indicator">
+                    <span id="b-strike-1" class="strike-icon">❌</span>
+                    <span id="b-strike-2" class="strike-icon">❌</span>
+                    <span id="b-strike-3" class="strike-icon">❌</span>
+                </div>
             </div>
         </div>
 
@@ -45,10 +58,16 @@
 
         <p style="margin: 0 0 10px 0; font-size: 0.9rem;">Tim Aktif: <strong id="active-team-text" style="color: #00e5ff;">BELUM ADA (Tunggu Buzzer HP)</strong></p>
         
+        <div class="operator-controls" style="margin-bottom: 10px;">
+            <button class="blue-btn" onclick="prevQuestion()">⏪ Soal Sebelumnya</button>
+            <button class="blue-btn" onclick="nextQuestion()">Soal Selanjutnya ⏩</button>
+            <button class="red-btn" style="background:#e67e22;" onclick="resetSemuaNyawa()">Reset Nyawa (X)</button>
+        </div>
+
         <div class="operator-controls">
             <input type="text" id="operator-input" placeholder="Ketik jawaban peserta di sini (Tekan Enter)..." autocomplete="off">
             <button class="blue-btn" onclick="submitAnswer()">Cek Jawaban</button>
-            <button class="red-btn" onclick="triggerStrike()">Salah (❌)</button>
+            <button class="red-btn" onclick="triggerWrongAnswer()">Salah (❌)</button>
         </div>
         <p id="operator-feedback" class="feedback-msg"></p>
     </div>
