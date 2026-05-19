@@ -177,7 +177,14 @@ let strikes = { A: 0, B: 0 };
 // ================= PEER JS (JARINGAN HOST) =================
 const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
 const myRoomId = "OIM-" + randomStr;
-const peer = new Peer(myRoomId);
+const peer = new Peer(myRoomId, {
+    config: {
+        'iceServers': [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+    }
+});
 
 peer.on('open', (id) => {
     document.getElementById('room-id-display').innerText = id;
