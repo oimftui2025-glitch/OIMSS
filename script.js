@@ -1,5 +1,4 @@
 // ================= DATABASE SURVEY =================
-// CARA GANTI: Ubah text di dalam tanda kutip question, text, points, atau keywords.
 const surveyDatabase = [
     {
         question: "Alasan paling klasik pas telat masuk kelas pagi?",
@@ -137,7 +136,6 @@ const surveyDatabase = [
         ]
     },
     {
-      {
         question: "Alasan paling klasik anak Teknik nunda ngerjain Tugas / Laprak?",
         answers: [
             { text: "Scroll TikTok / IG", points: 35, keywords: ["tiktok", "ig", "instagram", "scroll", "reels", "sosmed"], revealed: false },
@@ -156,7 +154,7 @@ const surveyDatabase = [
         question: "Momen paling bikin panik pas presentasi Tugas Besar?",
         answers: [
             { text: "Dosen Nanya Susah / Di-roasting", points: 35, keywords: ["dosen", "nanya", "killer", "susah", "diuji", "bantah"], revealed: false },
-            { text: "Temen Sekelompok Diem Aja (Beban)", points: 20, keywords: ["temen", "blank", "diem", "beban", "kelompok", "patung", "matil", "ngaret"], revealed: false },
+            { text: "Temen Sekelompok Diem Aja", points: 20, keywords: ["temen", "blank", "diem", "beban", "kelompok", "patung", "matil", "ngaret"], revealed: false },
             { text: "File PPT/Data Corrupt & Hilang", points: 15, keywords: ["file", "ppt", "corrupt", "error", "hilang", "flashdisk"], revealed: false },
             { text: "Laptop Hang / Blue Screen", points: 10, keywords: ["laptop", "hang", "lag", "blue screen", "mati", "lemot"], revealed: false },
             { text: "Lupa Materi / Nge-blank", points: 8, keywords: ["lupa", "blank", "gugup", "teks", "materi", "hapalan"], revealed: false },
@@ -166,7 +164,6 @@ const surveyDatabase = [
             { text: "Slide Typo / Salah Rumus", points: 1, keywords: ["typo", "salah", "data", "slide", "ketik", "rumus"], revealed: false },
             { text: "Waktu Habis Padahal Belum Kelar", points: 1, keywords: ["waktu", "habis", "timer", "cut", "disetop", "durasi"], revealed: false }
         ]
-    }
     }
 ];
 
